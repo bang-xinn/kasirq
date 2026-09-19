@@ -8,7 +8,7 @@
         <h2 class="card-title">Form Produk Baru</h2>
         <a href="{{ route('products.index') }}" class="btn btn-secondary btn-sm">← Kembali</a>
     </div>
-    <form action="{{ route('products.store') }}" method="POST">
+    <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="grid-2">
             <div class="form-group">
@@ -56,6 +56,11 @@
                     <input type="checkbox" name="is_active" value="1" {{ old('is_active', '1') == '1' ? 'checked' : '' }} style="accent-color:var(--accent); width:18px; height:18px">
                     <span class="text-sm">Produk Aktif</span>
                 </label>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1">
+                <label class="form-label">Foto Produk (Opsional)</label>
+                <input type="file" name="image" class="form-control" accept="image/*">
+                @error('image')<p class="text-sm text-red" style="margin-top:4px">{{ $message }}</p>@enderror
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Simpan Produk</button>

@@ -30,11 +30,23 @@
             --topbar-h: 64px;
         }
 
+        body.light-theme {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-hover: #f1f5f9;
+            --border: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
+            transition: background .3s, color .3s;
         }
 
         /* ── Sidebar ── */
@@ -425,7 +437,10 @@
     <main class="main">
         <div class="topbar">
             <h1 class="topbar-title">@yield('page-title', 'Dashboard')</h1>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3">
+                <button id="themeToggleBtn" style="background:var(--bg-hover); border:1px solid var(--border); color:var(--text-secondary); cursor:pointer; font-size:16px; padding:4px 8px; border-radius:8px; transition:all 0.2s;" title="Ganti Tema">
+                    🌙
+                </button>
                 <span class="text-sm text-muted">{{ now()->isoFormat('dddd, D MMMM Y') }}</span>
             </div>
         </div>
@@ -447,6 +462,28 @@
         </div>
     </main>
 
+    <script>
+        const themeBtn = document.getElementById('themeToggleBtn');
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+
+        if (currentTheme === 'light') {
+            document.body.classList.add('light-theme');
+            if(themeBtn) themeBtn.textContent = '☀️';
+        }
+
+        if(themeBtn) {
+            themeBtn.addEventListener('click', () => {
+                document.body.classList.toggle('light-theme');
+                if (document.body.classList.contains('light-theme')) {
+                    localStorage.setItem('theme', 'light');
+                    themeBtn.textContent = '☀️';
+                } else {
+                    localStorage.setItem('theme', 'dark');
+                    themeBtn.textContent = '🌙';
+                }
+            });
+        }
+    </script>
     @stack('scripts')
 </body>
 </html>

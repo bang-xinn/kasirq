@@ -283,8 +283,12 @@
                  data-category="{{ $product->category_id }}"
                  data-sku="{{ $product->sku }}"
                  onclick="addToCart(this)">
-                <div class="product-emoji">
-                    {{ $product->category->name === 'Makanan' ? '🍱' : ($product->category->name === 'Minuman' ? '🥤' : ($product->category->name === 'Snack & Camilan' ? '🍿' : ($product->category->name === 'Kebersihan' ? '🧴' : '📦'))) }}
+                <div class="product-emoji" style="height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 8px; overflow: hidden; background: var(--bg-hover);">
+                    @if($product->image)
+                        <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    @else
+                        <span style="font-size: 32px;">{{ $product->category->name === 'Makanan' ? '🍱' : ($product->category->name === 'Minuman' ? '🥤' : ($product->category->name === 'Snack & Camilan' ? '🍿' : ($product->category->name === 'Kebersihan' ? '🧴' : '📦'))) }}</span>
+                    @endif
                 </div>
                 <div class="product-name">{{ $product->name }}</div>
                 <div class="product-price">Rp {{ number_format($product->price, 0, ',', '.') }}</div>

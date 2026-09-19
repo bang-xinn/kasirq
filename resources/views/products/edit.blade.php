@@ -8,7 +8,7 @@
         <h2 class="card-title">Edit: {{ $product->name }}</h2>
         <a href="{{ route('products.index') }}" class="btn btn-secondary btn-sm">← Kembali</a>
     </div>
-    <form action="{{ route('products.update', $product) }}" method="POST">
+    <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data">
         @csrf @method('PUT')
         <div class="grid-2">
             <div class="form-group">
@@ -55,6 +55,17 @@
                     <input type="checkbox" name="is_active" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }} style="accent-color:var(--accent); width:18px; height:18px">
                     <span class="text-sm">Produk Aktif</span>
                 </label>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1">
+                <label class="form-label">Foto Produk (Opsional)</label>
+                @if($product->image)
+                    <div style="margin-bottom: 10px;">
+                        <img src="{{ Storage::url($product->image) }}" alt="Foto {{ $product->name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border);">
+                    </div>
+                @endif
+                <input type="file" name="image" class="form-control" accept="image/*">
+                <span class="text-sm text-muted">Biarkan kosong jika tidak ingin mengubah foto.</span>
+                @error('image')<p class="text-sm text-red" style="margin-top:4px">{{ $message }}</p>@enderror
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Update Produk</button>

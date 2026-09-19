@@ -6,7 +6,10 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ProductController extends Controller
 {
@@ -62,10 +65,24 @@ class ProductController extends Controller
             'cost_price' => ['nullable', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'unit' => ['required', 'string', 'max:50'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:2048'],
             'is_active' => ['boolean'],
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);
+
+        if ($request->hasFile('image')) {
+            $manager = new ImageManager(new Driver());
+            $image = $manager->decode($request->file('image'));
+            
+            $filename = uniqid('img_') . '.webp';
+            $path = 'products/' . $filename;
+            
+            $encoded = $image->encodeUsingFileExtension('webp', 80);
+            Storage::disk('public')->put($path, (string) $encoded);
+            
+            $validated['image'] = $path;
+        }
 
         Product::create($validated);
 
@@ -89,9 +106,27 @@ class ProductController extends Controller
             'cost_price' => ['nullable', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'unit' => ['required', 'string', 'max:50'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:2048'],
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', false);
+
+        if ($request->hasFile('image')) {
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
+            
+            $manager = new ImageManager(new Driver());
+            $image = $manager->decode($request->file('image'));
+            
+            $filename = uniqid('img_') . '.webp';
+            $path = 'products/' . $filename;
+            
+            $encoded = $image->encodeUsingFileExtension('webp', 80);
+            Storage::disk('public')->put($path, (string) $encoded);
+            
+            $validated['image'] = $path;
+        }
 
         $product->update($validated);
 
@@ -135,6 +170,10 @@ class ProductController extends Controller
 
     public function destroy(Product $product): RedirectResponse
     {
+        if ($product->image && Storage::disk('public')->exists($product->image)) {
+            Storage::disk('public')->delete($product->image);
+        }
+
         $product->delete();
 
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus!');
