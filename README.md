@@ -4,11 +4,11 @@ KasirQ adalah aplikasi Point of Sales (POS) berbasis web yang sederhana, cepat, 
 
 ## Fitur Utama ✨
 - **Kasir (POS)**: Sistem transaksi cepat dengan keranjang belanja, kalkulasi otomatis, opsi diskon (3%, 5%, 7%, 10%, 15%), dan dukungan pembayaran tunai maupun QRIS.
-- **Manajemen Produk**: CRUD produk dengan auto-generate SKU berdasarkan kategori (misal: `MKN-001`, `MNM-002`, `SNK-003`).
+- **Manajemen Produk**: CRUD produk dengan auto-generate SKU berdasarkan kategori (misal: `MKN-001`, `MNM-002`), fitur unggah foto produk, dan konversi otomatis ke format **WebP** untuk performa yang optimal.
 - **Manajemen Kategori**: Kelola kategori produk dengan mudah.
 - **Manajemen Transaksi**: Riwayat dan detail transaksi, cetak struk (otomatis menampilkan kembalian, QRIS jika dipilih).
 - **Pengaturan Toko**: Admin dapat mengubah nama toko (untuk struk) dan pesan di bagian bawah struk, serta mengganti gambar kode QRIS toko dari halaman pengaturan.
-- **Modern UI**: Desain mode gelap (dark mode) dengan efek glassmorphism yang cantik, animasi hover, dan responsif.
+- **Modern UI**: Desain dengan efek glassmorphism yang cantik, animasi hover, responsif, dan dilengkapi dengan **tombol pengganti tema (Light/Dark Mode)** yang tersimpan otomatis di browser.
 
 ## Persyaratan Sistem 🛠️
 - PHP 8.2 atau lebih baru
@@ -20,8 +20,8 @@ KasirQ adalah aplikasi Point of Sales (POS) berbasis web yang sederhana, cepat, 
 
 1. **Clone repository ini:**
    ```bash
-   git clone https://github.com/username/kasirq.git
-   cd kasirq
+   git clone https://github.com/bang-xinn/KasirQ.git
+   cd KasirQ
    ```
 
 2. **Install dependensi PHP dan Node:**
