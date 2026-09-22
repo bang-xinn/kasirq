@@ -8,8 +8,8 @@ KasirQ adalah aplikasi Point of Sales (POS) berbasis web yang sederhana, cepat, 
 - **Manajemen Kategori**: Kelola kategori produk dengan mudah.
 - **Manajemen Transaksi**: Riwayat dan detail transaksi, cetak struk (otomatis menampilkan kembalian, QRIS jika dipilih).
 - **Pengaturan Toko**: Admin dapat mengubah nama toko (untuk struk) dan pesan di bagian bawah struk, serta mengganti gambar kode QRIS toko dari halaman pengaturan.
-- **Modern UI**: Desain dengan efek glassmorphism yang cantik, animasi hover, responsif, dan dilengkapi dengan **tombol pengganti tema (Light/Dark Mode)** yang tersimpan otomatis di browser.
-
+- **Modern & Antislop UI/UX**: Tampilan telah dirombak total menggunakan standar antislop dengan **Tailwind CSS v4**. Menampilkan efek *glassmorphism* premium, tipografi modern (Instrument Sans), animasi interaktif, transisi yang halus, serta tata letak *mobile-first* yang sangat responsif.
+- **Light & Dark Mode**: Dilengkapi dengan sistem pengganti tema otomatis (*Class-based Dark Mode*) yang menyimpan preferensi secara persisten di *browser* Anda.
 ## Persyaratan Sistem 🛠️
 - PHP 8.2 atau lebih baru
 - Composer
