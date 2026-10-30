@@ -16,6 +16,7 @@ class Transaction extends Model
     protected $fillable = [
         'invoice_number',
         'user_id',
+        'shift_id',
         'subtotal',
         'discount_amount',
         'tax_amount',
@@ -43,5 +44,10 @@ class Transaction extends Model
     public function items(): HasMany
     {
         return $this->hasMany(TransactionItem::class);
+    }
+
+    public function shift(): BelongsTo
+    {
+        return $this->belongsTo(Shift::class);
     }
 }

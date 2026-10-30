@@ -68,6 +68,11 @@
                 Transaksi
             </a>
 
+            <a href="{{ route('shifts.create') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('shifts.*') ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent' }}">
+                <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Shift Kasir
+            </a>
+
             @if(auth()->user()->isAdmin())
             <div class="px-3 text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase mt-6 mb-3">Manajemen</div>
             
@@ -95,15 +100,24 @@
 
         <!-- Footer / User Profile -->
         <div class="p-4 border-t border-slate-200 dark:border-slate-800/60">
-            <div class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 mb-3">
-                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                </div>
-                <div class="overflow-hidden">
+            <a href="{{ route('profile.edit') }}" class="group flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 border transition-colors mb-3 {{ request()->routeIs('profile.*') ? 'border-indigo-300 dark:border-indigo-500/40' : 'border-transparent hover:border-slate-200 dark:hover:border-slate-700/60' }}">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&amp;background=4f46e5&amp;color=fff&amp;rounded=true&amp;bold=true"
+                     alt="{{ auth()->user()->name }}"
+                     class="w-9 h-9 rounded-full shrink-0"
+                     loading="lazy">
+                <div class="overflow-hidden min-w-0">
                     <div class="text-sm font-semibold truncate text-slate-900 dark:text-slate-100">{{ auth()->user()->name }}</div>
                     <div class="text-xs text-slate-500 dark:text-slate-400">{{ auth()->user()->role === 'admin' ? 'Administrator' : 'Kasir' }}</div>
                 </div>
-            </div>
+                <svg class="w-4 h-4 ml-auto shrink-0 text-slate-400 group-hover:text-indigo-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+            </a>
+
+            <a href="{{ route('profile.edit') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700/50 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400 dark:hover:border-indigo-500/30 transition-colors mb-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                Edit Profil
+            </a>
             
             <form action="{{ route('logout') }}" method="POST">
                 @csrf

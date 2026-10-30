@@ -3,10 +3,10 @@
 @section('page-title', '🛒 Kasir / POS')
 
 @section('content')
-<div class="h-[calc(100vh-theme(spacing.16)-theme(spacing.16))] lg:h-[calc(100vh-theme(spacing.16)-theme(spacing.16))] grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 max-w-[1600px] mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full p-6 max-w-[1600px] mx-auto lg:h-[calc(100vh-11rem)] lg:min-h-[560px]">
 
     <!-- LEFT: Products Panel -->
-    <div class="flex flex-col gap-4 overflow-hidden h-full">
+    <div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-4 min-h-0">
         
         <!-- Controls -->
         <div class="flex flex-col sm:flex-row gap-3">
@@ -32,58 +32,74 @@
         </div>
 
         <!-- Product Grid -->
-        <div class="flex-1 min-h-0 overflow-y-auto pr-2 pb-20 lg:pb-0">
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4" id="productGrid">
+        <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 flex-1 min-h-0 overflow-y-auto content-start pr-1 pb-20 lg:pb-0">
                 @foreach($products as $product)
-                <div class="product-card group bg-white dark:bg-[#1a1d27] border border-slate-200 dark:border-slate-800/60 rounded-2xl p-3 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-500/50 flex flex-col relative overflow-hidden {{ $product->stock <= 0 ? 'opacity-50 grayscale cursor-not-allowed pointer-events-none' : '' }}"
+                @php
+                    $emoji = match ($product->category->name) {
+                        'Makanan' => '🍱',
+                        'Minuman' => '🥤',
+                        'Snack & Camilan' => '🍿',
+                        'Kebersihan' => '🧴',
+                        default => '📦',
+                    };
+                @endphp
+                <div class="product-card group bg-white dark:bg-gray-800/80 hover:bg-slate-50 dark:hover:bg-gray-800 border border-slate-200 dark:border-gray-700/50 rounded-xl p-3 flex flex-col justify-between h-full relative cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-500/50 {{ $product->stock <= 0 ? 'opacity-50 grayscale cursor-not-allowed pointer-events-none' : '' }}"
                  data-id="{{ $product->id }}"
                  data-name="{{ $product->name }}"
                  data-price="{{ $product->price }}"
                  data-stock="{{ $product->stock }}"
                  data-category="{{ $product->category_id }}"
                  data-sku="{{ $product->sku }}"
+                 data-image="{{ $product->image ? Storage::url($product->image) : '' }}"
+                 data-emoji="{{ $emoji }}"
                  onclick="addToCart(this)">
                 
                 @if($product->stock <= 0)
-                    <div class="absolute inset-0 bg-white/50 dark:bg-black/50 z-10 flex items-center justify-center backdrop-blur-[1px]">
+                    <div class="absolute inset-0 bg-white/50 dark:bg-black/50 z-10 flex items-center justify-center backdrop-blur-[1px] rounded-xl">
                         <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider shadow-lg">Habis</span>
                     </div>
                 @endif
 
-                <div class="aspect-square mb-3 rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center relative">
+                <div class="w-full h-28 sm:h-32 mb-2 rounded-lg overflow-hidden bg-slate-100 dark:bg-gray-900/50 flex items-center justify-center shrink-0">
                     @if($product->image)
                         <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                     @else
-                        <span class="text-4xl group-hover:scale-125 transition-transform duration-500">{{ $product->category->name === 'Makanan' ? '🍱' : ($product->category->name === 'Minuman' ? '🥤' : ($product->category->name === 'Snack & Camilan' ? '🍿' : ($product->category->name === 'Kebersihan' ? '🧴' : '📦'))) }}</span>
+                        <span class="text-4xl group-hover:scale-125 transition-transform duration-500">{{ $emoji }}</span>
                     @endif
                 </div>
                 
-                <h3 class="font-semibold text-sm leading-snug mb-1 text-slate-800 dark:text-slate-200 line-clamp-2 flex-1">{{ $product->name }}</h3>
-                <div class="flex items-end justify-between mt-2">
-                    <div class="font-bold text-emerald-600 dark:text-emerald-400 text-sm">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
-                    <div class="text-[10px] font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md">Stok: {{ $product->stock }}</div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-gray-100 line-clamp-2 mb-1" title="{{ $product->name }}">{{ $product->name }}</h4>
+
+                <div class="flex items-center justify-between gap-2 mt-auto pt-2">
+                    <span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm whitespace-nowrap">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                    <span class="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400 bg-slate-100 dark:bg-gray-700/50 px-2 py-0.5 rounded whitespace-nowrap">Stok: {{ $product->stock }}</span>
+                </div>
                 </div>
                 @endforeach
-            </div>
         </div>
     </div>
 
     <!-- RIGHT: Cart Panel -->
-    <div class="bg-white dark:bg-[#1a1d27] border border-slate-200 dark:border-slate-800/60 rounded-3xl flex flex-col h-full shadow-lg lg:shadow-none overflow-hidden fixed lg:relative bottom-0 left-0 right-0 z-40 lg:z-auto transition-transform duration-300 translate-y-full lg:translate-y-0" id="cartPanel">
+    <div class="lg:col-span-5 xl:col-span-4 flex flex-col justify-between p-4 rounded-3xl min-w-0 2xl:min-w-[320px] h-full min-h-0 bg-white dark:bg-[#1a1d27] border border-slate-200 dark:border-slate-800/60 shadow-lg lg:shadow-none overflow-hidden fixed lg:relative bottom-0 left-0 right-0 z-40 lg:z-auto transition-transform duration-300 translate-y-full lg:translate-y-0" id="cartPanel">
         
         <!-- Mobile Cart Handle -->
         <div class="h-1.5 w-12 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mt-3 mb-2 lg:hidden cursor-pointer" onclick="toggleMobileCart()"></div>
 
-        <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800/60 flex items-center justify-between bg-white/50 dark:bg-[#1a1d27]/50 backdrop-blur-md">
+        <div class="shrink-0 px-5 py-4 border-b border-slate-100 dark:border-slate-800/60 flex items-center justify-between bg-white/50 dark:bg-[#1a1d27]/50 backdrop-blur-md">
             <div class="flex items-center gap-2">
                 <span class="text-xl">🛒</span>
                 <h2 class="font-bold text-slate-900 dark:text-slate-100">Keranjang</h2>
                 <span class="bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold px-2 py-0.5 rounded-full" id="cartBadge">0</span>
             </div>
-            <button class="text-xs font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 px-3 py-1.5 rounded-lg transition-colors" onclick="clearCart()">Kosongkan</button>
+            <div class="flex items-center gap-1.5">
+                @if($activeShift ?? null)
+                    <button type="button" class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 px-2.5 py-1.5 rounded-lg transition-colors" onclick="openCloseShiftModal()">Tutup Shift</button>
+                @endif
+                <button type="button" class="text-[11px] font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 px-2.5 py-1.5 rounded-lg transition-colors" onclick="clearCart()">Kosongkan</button>
+            </div>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-3 relative scrollbar-thin" id="cartItems">
+        <div class="grid grid-cols-2 gap-2 max-h-[260px] flex-1 min-h-0 content-start overflow-y-auto relative pr-1 scrollbar-thin" id="cartItems">
             <!-- Empty State -->
             <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500" id="cartEmpty">
                 <span class="text-5xl mb-3 opacity-50 grayscale">🛍️</span>
@@ -92,13 +108,13 @@
             </div>
         </div>
 
-        <div class="p-5 border-t border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-800/20">
+        <div class="shrink-0 p-5 border-t border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-800/20">
             
             <div class="mb-4">
                 <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Diskon</label>
-                <div class="grid grid-cols-6 gap-1.5">
+                <div class="grid grid-cols-3 gap-2">
                     @foreach([0, 3, 5, 7, 10, 15] as $pct)
-                        <button class="discount-btn py-1.5 rounded-lg text-xs font-bold transition-all border {{ $pct === 0 ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/20 active' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/50 hover:text-indigo-600 dark:hover:text-indigo-400' }}" data-pct="{{ $pct }}" onclick="setDiscount(this)">{{ $pct }}%</button>
+                        <button class="discount-btn w-full whitespace-nowrap py-2 rounded-lg text-xs font-bold transition-all border {{ $pct === 0 ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/20 active' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/50 hover:text-indigo-600 dark:hover:text-indigo-400' }}" data-pct="{{ $pct }}" onclick="setDiscount(this)">{{ $pct }}%</button>
                     @endforeach
                 </div>
                 <input type="hidden" id="discountInput" value="0">
@@ -249,6 +265,50 @@
         </div>
     </div>
 </div>
+
+<!-- Close Shift Modal -->
+<div class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 z-[300] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity opacity-0 duration-300" id="closeShiftModal" onclick="closeCloseShiftModal()">
+    <div class="bg-white dark:bg-[#1a1d27] border border-slate-200 dark:border-slate-800/60 rounded-2xl shadow-2xl w-full max-w-md p-6 transform scale-95 opacity-0 transition-all duration-300" id="closeShiftModalBox" onclick="event.stopPropagation()">
+        <div class="flex items-start justify-between gap-4 mb-5">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 shrink-0 rounded-xl bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center text-xl">🔒</div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Tutup Shift</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Hitung uang fisik di laci sebelum menutup shift.</p>
+                </div>
+            </div>
+            <button type="button" class="shrink-0 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 p-2 rounded-full transition-colors" onclick="closeCloseShiftModal()" aria-label="Tutup modal">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <form action="{{ route('shifts.close') }}" method="POST" class="space-y-4">
+            @csrf
+
+            <div>
+                <label for="actual_ending_cash" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Total Uang Fisik Saat Ini</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 text-sm">Rp</span>
+                    <input type="number" name="actual_ending_cash" id="actual_ending_cash" step="0.01" min="0" required placeholder="0"
+                           value="{{ old('actual_ending_cash') }}"
+                           class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-lg font-bold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-red-500/40 focus:border-red-500 transition-colors">
+                </div>
+                @error('actual_ending_cash')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <p class="text-xs text-slate-500 dark:text-slate-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl px-3 py-2">
+                Pastikan semua transaksi sudah diproses. Shift yang ditutup tidak dapat dibuka kembali.
+            </p>
+
+            <div class="flex gap-2 pt-1">
+                <button type="button" class="flex-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold py-3 rounded-xl transition-colors" onclick="closeCloseShiftModal()">Batal</button>
+                <button type="submit" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-red-500/30 transition-colors">Tutup Shift</button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -258,6 +318,7 @@ let selectedMethod = 'cash';
 let currentDiscountPct = 0;
 
 const fmt = n => 'Rp ' + parseInt(n).toLocaleString('id-ID');
+const esc = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 
 /* ─── Mobile Cart Logic ─── */
 const cartPanel = document.getElementById('cartPanel');
@@ -383,6 +444,8 @@ function addToCart(card) {
         cart[id] = {
             id, name: card.dataset.name,
             price: parseFloat(card.dataset.price),
+            image: card.dataset.image || '',
+            emoji: card.dataset.emoji || '📦',
             qty: 0, maxStock
         };
     }
@@ -407,6 +470,11 @@ function changeQty(id, delta) {
     if (cart[id].qty <= 0) {
         delete cart[id];
     }
+    renderCart();
+}
+
+function removeFromCart(id) {
+    delete cart[id];
     renderCart();
 }
 
@@ -446,20 +514,26 @@ function renderCart() {
 
     ids.forEach(id => {
         const item = cart[id];
+        const name = esc(item.name);
+        const thumbnail = item.image
+            ? `<img src="${item.image}" alt="${name}" class="w-8 h-8 object-cover rounded shrink-0">`
+            : `<span class="w-8 h-8 flex items-center justify-center rounded bg-slate-100 dark:bg-gray-700 text-base shrink-0">${item.emoji}</span>`;
+
         const div = document.createElement('div');
-        div.className = 'flex items-center gap-3 p-3 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 rounded-2xl shadow-sm hover:shadow-md transition-shadow animate-fade-in-down';
+        div.className = 'bg-white dark:bg-gray-800/90 border border-slate-200 dark:border-gray-700/60 rounded-lg p-2 flex flex-col justify-between gap-1 text-xs shadow-sm hover:shadow-md transition-shadow animate-fade-in-down';
         div.innerHTML = `
-            <div class="flex-1 min-w-0">
-                <div class="font-semibold text-sm text-slate-800 dark:text-slate-200 truncate">${item.name}</div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${fmt(item.price)} / pcs</div>
+            <div class="flex items-center gap-1.5 min-w-0">
+                ${thumbnail}
+                <div class="flex-1 min-w-0 font-semibold text-slate-800 dark:text-gray-200 line-clamp-1" title="${name}">${name}</div>
+                <button type="button" class="w-5 h-5 shrink-0 flex items-center justify-center rounded text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors" onclick="removeFromCart('${id}')" aria-label="Hapus ${name}">&times;</button>
             </div>
-            <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
-                <button class="w-7 h-7 flex items-center justify-center rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 font-bold transition-colors" onclick="changeQty('${id}', -1)">−</button>
-                <span class="w-6 text-center text-sm font-bold text-slate-900 dark:text-slate-100">${item.qty}</span>
-                <button class="w-7 h-7 flex items-center justify-center rounded-lg text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 font-bold transition-colors" onclick="changeQty('${id}', 1)">+</button>
-            </div>
-            <div class="w-20 text-right text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                ${fmt(item.price * item.qty)}
+            <div class="flex items-center justify-between gap-1 mt-0.5">
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold whitespace-nowrap">${fmt(item.price * item.qty)}</span>
+                <div class="flex items-center gap-0.5 bg-slate-50 dark:bg-gray-900 p-0.5 rounded-lg border border-slate-200 dark:border-gray-700 shrink-0">
+                    <button type="button" class="w-6 h-6 flex items-center justify-center rounded-md text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 font-bold transition-colors" onclick="changeQty('${id}', -1)" aria-label="Kurangi ${name}">−</button>
+                    <span class="w-5 text-center font-bold text-slate-900 dark:text-gray-100">${item.qty}</span>
+                    <button type="button" class="w-6 h-6 flex items-center justify-center rounded-md text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 font-bold transition-colors" onclick="changeQty('${id}', 1)" aria-label="Tambah ${name}">+</button>
+                </div>
             </div>
         `;
         container.appendChild(div);
@@ -695,5 +769,42 @@ function closeReceipt() {
         location.reload();
     }, 300);
 }
+
+/* ─── Close Shift Modal ─── */
+function openCloseShiftModal() {
+    const modal = document.getElementById('closeShiftModal');
+    const box = document.getElementById('closeShiftModalBox');
+    if (!modal || !box) return;
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        box.classList.remove('scale-95', 'opacity-0');
+        const input = document.getElementById('actual_ending_cash');
+        if (input) input.focus();
+    }, 10);
+
+    document.body.classList.add('overflow-hidden');
+}
+
+function closeCloseShiftModal() {
+    const modal = document.getElementById('closeShiftModal');
+    const box = document.getElementById('closeShiftModalBox');
+    if (!modal || !box) return;
+
+    modal.classList.add('opacity-0');
+    box.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }, 200);
+
+    document.body.classList.remove('overflow-hidden');
+}
+
+@if($errors->has('actual_ending_cash'))
+    openCloseShiftModal();
+@endif
 </script>
 @endpush

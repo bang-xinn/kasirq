@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Setting;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use Illuminate\Http\JsonResponse;
@@ -17,9 +18,10 @@ class PosController extends Controller
     {
         $categories = Category::withCount(['products' => fn ($q) => $q->where('is_active', true)])->get();
         $products = Product::where('is_active', true)->with('category')->get();
-        $settings = \App\Models\Setting::all()->pluck('value', 'key');
+        $settings = Setting::all()->pluck('value', 'key');
+        $activeShift = auth()->user()->shifts()->where('status', 'open')->latest('start_time')->first();
 
-        return view('pos.index', compact('categories', 'products', 'settings'));
+        return view('pos.index', compact('categories', 'products', 'settings', 'activeShift'));
     }
 
     public function getProducts(Request $request): JsonResponse
@@ -88,9 +90,15 @@ class PosController extends Controller
                 STR_PAD_LEFT,
             );
 
+            $shift = auth()->user()->shifts()
+                ->where('status', 'open')
+                ->latest('start_time')
+                ->first();
+
             $transaction = Transaction::create([
                 'invoice_number' => $invoiceNumber,
                 'user_id' => auth()->id(),
+                'shift_id' => $shift?->id,
                 'subtotal' => $subtotal,
                 'discount_amount' => $discountAmount,
                 'tax_amount' => 0,
